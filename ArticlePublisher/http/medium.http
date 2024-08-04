@@ -1,0 +1,42 @@
+GET https://api.medium.com/v1/me
+Accept: application/json
+Authorization: Bearer 257a8fdc02f841c6694639fdbc487aa099919c38b08f28c216f29fc8280221fbe
+
+### Create post
+POST https://api.medium.com/v1/users/18f907be07187a63afa513c13af5c297225d568dcd2b4c14d85d1b7ba3f792b06/posts
+Authorization: Bearer 257a8fdc02f841c6694639fdbc487aa099919c38b08f28c216f29fc8280221fbe
+Content-Type: application/json
+
+{
+  "title": "Hard things in software development",
+  "contentFormat": "html",
+  "content": "<p>Cache invalidation</p><p>Naming things</p>",
+  "tags": ["development", "design"],
+  "publishStatus": "draft"
+}
+
+
+### Create post function
+POST http://localhost:7099/api/Publisher
+Content-Type: text/markdown
+
+# Sample Markdown Document
+
+This is a simple Markdown document.
+
+## Features
+
+- Easy to read
+- Easy to write
+- Widely supported
+
+## Code Example
+
+```python
+def greet(name):
+    return f"Hello, {name}!"
+
+print(greet("World"))
+```
+
+That's all for now!
