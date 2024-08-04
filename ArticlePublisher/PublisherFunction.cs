@@ -21,7 +21,7 @@ namespace ArticlePublisher
         }
 
         [Function("Publisher")]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
         {
             // read body
             var content = await new StreamReader(req.Body).ReadToEndAsync();
