@@ -1,23 +1,21 @@
 using Markdig;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using System.Text.Json.Serialization;
-using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribute;
-
-using static System.Net.Mime.MediaTypeNames;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace ArticlePublisher
 {
     public class PublisherFunction
     {
         private readonly ILogger<PublisherFunction> _logger;
+        private readonly IMedium _mediumClient;
 
-        public PublisherFunction(ILogger<PublisherFunction> logger)
+        public PublisherFunction(ILogger<PublisherFunction> logger, IMedium mediumClient)
         {
             _logger = logger;
+            _mediumClient = mediumClient;
         }
 
         [Function("Publisher")]
@@ -37,7 +35,27 @@ namespace ArticlePublisher
                 .ToHtml(content!, pipeline);
 
             _logger.LogInformation("C# HTTP trigger function processed a request.");
+
+            await PublishToMediumAsync(frontMatter, html);
+
             return new OkObjectResult(html);
+        }
+
+        public async Task PublishToMediumAsync(BlogFrontMatter blogFrontMatter, string html)
+        {
+            MediumPost mediumPost = new MediumPost
+            {
+                Title = blogFrontMatter.Title,
+                ContentFormat = "html",
+                Content = html,
+                PublishStatus = "draft"
+            };
+
+            var mediumToken = Environment.GetEnvironmentVariable("MEDIUM_TOKEN");
+            var mediumUserId = Environment.GetEnvironmentVariable("MEDIUM_USERID");
+
+            await _mediumClient.CreatePost(mediumUserId, mediumPost, mediumToken);
+
         }
     }
 }
